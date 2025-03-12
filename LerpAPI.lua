@@ -26,11 +26,11 @@ function lerpAPI:new(speed, initPos)
 	inst.speed = speed
 	
 	-- Lerp variables
-	local apply = initPos or 0
-	inst.prevTick = apply
-	inst.currTick = apply
-	inst.target   = apply
-	inst.currPos  = apply
+	local pos = initPos or 0
+	inst.prevTick = pos
+	inst.currTick = pos
+	inst.target   = pos
+	inst.currPos  = pos
 	
 	-- Lerp enabled
 	inst.enabled = true
