@@ -52,7 +52,7 @@ function lerpAPI:new(speed, pos)
 	-- Lerp enabled
 	obj.enabled = true
 	
-	-- Add objact to list
+	-- Add object to list
 	lerps[obj] = obj
 	
 	-- Return object
