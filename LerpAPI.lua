@@ -29,6 +29,7 @@ end
 -- Resets lerp, with optional target
 function lerpInternal:reset(pos)
 	
+	-- Reset variables
 	pos = pos or 0
 	self.prevTick = pos
 	self.currTick = pos
@@ -64,8 +65,13 @@ end
 events.TICK:register(function()
 	for _, obj in pairs(lerps) do
 		if obj.enabled then
+			
+			-- Reset ticks
 			obj.prevTick = obj.currTick
+			
+			-- Apply
 			obj.currTick = math.lerp(obj.currTick, obj.target, obj.speed)
+			
 		end
 	end
 end, "tickLerp")
@@ -74,7 +80,10 @@ end, "tickLerp")
 events.RENDER:register(function(delta, context)
 	for _, obj in pairs(lerps) do
 		if obj.enabled then
+			
+			-- Apply
 			obj.currPos = math.lerp(obj.prevTick, obj.currTick, delta)
+			
 		end
 	end
 end, "renderLerp")
