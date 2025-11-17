@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.0
+-- Version: 1.2.1
 
 -- Create API
 local lerpAPI = {}
@@ -29,7 +29,10 @@ end
 -- Resets lerp, with optional target
 function lerpInternal:reset(pos)
 	
-	-- Reset variables
+	--[[
+		Lerp variables:
+		The initial variables the lerp uses to control it position, in tick and render
+	--]]
 	pos = pos or 0
 	self.prevTick = pos
 	self.currTick = pos
@@ -42,17 +45,8 @@ function lerpInternal:reset(pos)
 	
 end
 
--- Create a lerp object
-function lerpAPI:new(pos, stiff, damp, mass)
-	
-	-- Create object
-	local obj = setmetatable({}, { __index = lerpInternal })
-	
-	--[[
-		Lerp variables:
-		The initial variables the lerp uses to control it position, in tick and render
-	--]]
-	obj:reset(pos)
+-- Sets stiffness
+function lerpInternal:setStiff(val)
 	
 	--[[
 		Stiffness:
@@ -60,7 +54,15 @@ function lerpAPI:new(pos, stiff, damp, mass)
 		0 means it will never approach the target
 		1 means it will reach the target within the tick
 	--]]
-	obj.stiff = stiff or 0.2
+	self.stiff = val or 0.2
+	
+	-- Return object
+	return self
+	
+end
+
+-- Sets damping
+function lerpInternal:setDamp(val)
 	
 	--[[
 		Damping:
@@ -68,7 +70,15 @@ function lerpAPI:new(pos, stiff, damp, mass)
 		0 means it will never reach its target due to bouncing
 		1 means it wont bounce around the target
 	--]]
-	obj.damp = damp or 1
+	self.damp = val or 1
+	
+	-- Return object
+	return self
+	
+end
+
+-- Sets mass
+function lerpInternal:setMass(val)
 	
 	--[[
 		Mass:
@@ -76,11 +86,36 @@ function lerpAPI:new(pos, stiff, damp, mass)
 		Cannot have a mass of 0, otherwise divide by 0 errors will occur
 		You can *still* do 0 by changing it in field, but ur asking for issues at that point
 	--]] 
-	if mass == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
-	obj.mass = mass or 1
+	if val == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
+	self.mass = val or 1
+	
+	-- Return object
+	return self
+	
+end
 
-	-- Lerp enabled
-	obj.enabled = true
+-- Create a lerp object
+function lerpAPI:new(pos, stiff, damp, mass)
+	
+	-- Create object
+	pos = pos or 0
+	local obj = setmetatable(
+		{
+			prevTick = pos,
+			currTick = pos,
+			target   = pos,
+			currPos  = pos,
+			vel      = 0,
+			stiff    = stiff or 0.2,
+			damp     = damp or 1,
+			mass     = mass or 1,
+			enabled  = true
+		},
+		{ __index = lerpInternal }
+	)
+	
+	-- Checks if mass is set to 0
+	if mass == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
 	
 	-- Add object to list
 	lerps[obj] = obj
