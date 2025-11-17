@@ -36,6 +36,9 @@ function lerpInternal:reset(pos)
 	self.target   = pos
 	self.currPos  = pos
 	
+	-- Return object
+	return self
+	
 end
 
 -- Create a lerp object
