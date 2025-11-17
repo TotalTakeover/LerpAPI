@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.1
+-- Version: 1.2.2
 
 -- Create API
 local lerpAPI = {}
@@ -88,6 +88,19 @@ function lerpInternal:setMass(val)
 	--]] 
 	if val == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
 	self.mass = val or 1
+	
+	-- Return object
+	return self
+	
+end
+
+-- Flips velocity and "Bounces" position off of provided value
+-- Great for creating limits to lerp when using spring lerping
+function lerpInternal:bounce(val)
+	
+	-- Apply
+	self.currTick = val
+	self.vel = -self.vel
 	
 	-- Return object
 	return self
