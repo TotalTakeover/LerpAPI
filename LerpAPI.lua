@@ -105,7 +105,7 @@ function lerpInternal:setStiff(val)
 		0 means it will never approach the target
 		1 means it will reach the target within the tick
 	--]]
-	self.stiff = val or 0.2
+	self.stiff = val
 	
 	-- Return object
 	return self
@@ -121,7 +121,7 @@ function lerpInternal:setDamp(val)
 		0 means it will never reach its target due to bouncing
 		1 means it wont bounce around the target
 	--]]
-	self.damp = val or 1
+	self.damp = val
 	
 	-- Return object
 	return self
@@ -138,7 +138,7 @@ function lerpInternal:setMass(val)
 		You can *still* do 0 by changing it in field, but ur asking for issues at that point
 	--]] 
 	if val == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
-	self.mass = val or 1
+	self.mass = val
 	
 	-- Return object
 	return self
