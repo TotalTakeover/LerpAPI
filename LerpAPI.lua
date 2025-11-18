@@ -19,31 +19,82 @@ local lerpInternal = {}
 -- Lerps table
 local lerps = {}
 
--- Removes lerp
-function lerpInternal:remove()
+-- Create a lerp object
+function lerpAPI:new(pos, stiff, damp, mass)
 	
-	lerps[self] = nil
+	-- Create object
+	pos = pos or 0
+	local obj = setmetatable(
+		{
+			prevTick = pos,
+			currTick = pos,
+			target   = pos,
+			currPos  = pos,
+			vel      = 0,
+			stiff    = stiff or 0.2,
+			damp     = damp or 1,
+			mass     = mass or 1,
+			enabled  = true
+		},
+		{ __index = lerpInternal }
+	)
+	
+	-- Checks if mass is set to 0
+	if mass == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
+	
+	-- Add object to list
+	lerps[obj] = obj
+	
+	-- Return object
+	return obj
 	
 end
 
--- Resets lerp, with optional target
-function lerpInternal:reset(pos)
+-- Flips velocity and "Bounces" position off of provided value
+-- Great for creating limits to lerp when using spring lerping
+function lerpInternal:bounce(val)
 	
-	--[[
-		Lerp variables:
-		The initial variables the lerp uses to control it position, in tick and render
-	--]]
-	pos = pos or 0
-	self.prevTick = pos
-	self.currTick = pos
-	self.target   = pos
-	self.currPos  = pos
-	self.vel      = 0
+	-- Apply
+	self.currTick = val
+	self.vel = -self.vel
 	
 	-- Return object
 	return self
 	
 end
+
+-- Iterate through the lerps to set the next tick of each lerp
+events.TICK:register(function()
+	for _, obj in pairs(lerps) do
+		if obj.enabled then
+			
+			-- Reset ticks
+			obj.prevTick = obj.currTick
+			
+			-- Calc
+			local fSpring = -obj.stiff * (obj.currTick - obj.target)
+			local fDamp   = -obj.damp * obj.vel
+			local acc     = (fSpring + fDamp) / obj.mass
+			
+			-- Apply
+			obj.vel = obj.vel + acc
+			obj.currTick = obj.currTick + obj.vel
+			
+		end
+	end
+end, "tickLerp")
+
+-- Iterate through the lerps to smooth the lerp each frame
+events.RENDER:register(function(delta, context)
+	for _, obj in pairs(lerps) do
+		if obj.enabled then
+			
+			-- Apply
+			obj.currPos = math.lerp(obj.prevTick, obj.currTick, delta)
+			
+		end
+	end
+end, "renderLerp")
 
 -- Sets stiffness
 function lerpInternal:setStiff(val)
@@ -94,82 +145,31 @@ function lerpInternal:setMass(val)
 	
 end
 
--- Flips velocity and "Bounces" position off of provided value
--- Great for creating limits to lerp when using spring lerping
-function lerpInternal:bounce(val)
+-- Resets lerp, with optional target
+function lerpInternal:reset(pos)
 	
-	-- Apply
-	self.currTick = val
-	self.vel = -self.vel
+	--[[
+		Lerp variables:
+		The initial variables the lerp uses to control it position, in tick and render
+	--]]
+	pos = pos or 0
+	self.prevTick = pos
+	self.currTick = pos
+	self.target   = pos
+	self.currPos  = pos
+	self.vel      = 0
 	
 	-- Return object
 	return self
 	
 end
 
--- Create a lerp object
-function lerpAPI:new(pos, stiff, damp, mass)
+-- Removes lerp
+function lerpInternal:remove()
 	
-	-- Create object
-	pos = pos or 0
-	local obj = setmetatable(
-		{
-			prevTick = pos,
-			currTick = pos,
-			target   = pos,
-			currPos  = pos,
-			vel      = 0,
-			stiff    = stiff or 0.2,
-			damp     = damp or 1,
-			mass     = mass or 1,
-			enabled  = true
-		},
-		{ __index = lerpInternal }
-	)
-	
-	-- Checks if mass is set to 0
-	if mass == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
-	
-	-- Add object to list
-	lerps[obj] = obj
-	
-	-- Return object
-	return obj
+	lerps[self] = nil
 	
 end
-
--- Iterate through the lerps to set the next tick of each lerp
-events.TICK:register(function()
-	for _, obj in pairs(lerps) do
-		if obj.enabled then
-			
-			-- Reset ticks
-			obj.prevTick = obj.currTick
-			
-			-- Calc
-			local fSpring = -obj.stiff * (obj.currTick - obj.target)
-			local fDamp   = -obj.damp * obj.vel
-			local acc     = (fSpring + fDamp) / obj.mass
-			
-			-- Apply
-			obj.vel = obj.vel + acc
-			obj.currTick = obj.currTick + obj.vel
-			
-		end
-	end
-end, "tickLerp")
-
--- Iterate through the lerps to smooth the lerp each frame
-events.RENDER:register(function(delta, context)
-	for _, obj in pairs(lerps) do
-		if obj.enabled then
-			
-			-- Apply
-			obj.currPos = math.lerp(obj.prevTick, obj.currTick, delta)
-			
-		end
-	end
-end, "renderLerp")
 
 -- Return API
 return lerpAPI
