@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.2
+-- Version: 1.2.3
 
 -- Create API
 local lerpAPI = {}
@@ -95,6 +95,46 @@ events.RENDER:register(function(delta, context)
 		end
 	end
 end, "renderLerp")
+
+-- Sets enabled
+function lerpInternal:setEnabled(bool)
+	
+	--[[
+		Enabled:
+		Determines if the lerp should function
+		Saves on instructions if the lerp is not in use
+	--]]
+	self.enabled = bool
+	
+	-- Return object
+	return self
+	
+end
+
+-- Sets target
+function lerpInternal:setTarget(val)
+	
+	--[[
+		Target:
+		The position the lerp will attempt to reach in a smooth manner
+	--]]
+	self.target = val
+	
+	-- Return object
+	return self
+	
+end
+
+-- Gets position
+function lerpInternal:getPos()
+	
+	--[[
+		Position:
+		The current position of the lerp on its way to the target
+	--]]
+	return self.currPos
+	
+end
 
 -- Sets stiffness
 function lerpInternal:setStiff(val)
