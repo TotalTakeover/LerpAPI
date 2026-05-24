@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.5
+-- Version: 1.2.6
 
 -- Create API
 local lerpAPI = {}
@@ -26,7 +26,7 @@ local lerpMeta = {
 }
 
 -- Create a lerp object
-function lerpAPI:new(pos, stiff, damp, mass)
+function lerpAPI.new(pos, stiff, damp, mass)
 	
 	-- Create object
 	pos = pos or 0
