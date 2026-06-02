@@ -36,7 +36,7 @@ function lerpAPI.new(pos, stiff, damp, mass)
 			currTick = pos,
 			target   = pos,
 			currPos  = pos,
-			vel      = 0,
+			vel      = type(pos) ~= "number" and pos:reset() or 0,
 			stiff    = stiff or 0.2,
 			damp     = damp or 1,
 			mass     = mass or 1,
@@ -58,33 +58,37 @@ end
 
 -- Iterate through the lerps to set the next tick of each lerp
 events.TICK:register(function()
-	for _, obj in pairs(lerps) do
-		if obj.enabled then
-			
-			-- Reset ticks
-			obj.prevTick = obj.currTick
-			
-			-- Calc
-			local fSpring = -obj.stiff * (obj.currTick - obj.target)
-			local fDamp   = -obj.damp * obj.vel
-			local acc     = (fSpring + fDamp) / obj.mass
-			
-			-- Apply
-			obj.vel = obj.vel + acc
-			obj.currTick = obj.currTick + obj.vel
-			
+	if not client:isPaused() then
+		for _, obj in pairs(lerps) do
+			if obj.enabled then
+				
+				-- Reset ticks
+				obj.prevTick = obj.currTick
+				
+				-- Calc
+				local fSpring = -obj.stiff * (obj.currTick - obj.target)
+				local fDamp   = -obj.damp * obj.vel
+				local acc     = (fSpring + fDamp) / obj.mass
+				
+				-- Apply
+				obj.vel = obj.vel + acc
+				obj.currTick = obj.currTick + obj.vel
+				
+			end
 		end
 	end
 end, "lerpTick")
 
 -- Iterate through the lerps to smooth the lerp each frame
 events.RENDER:register(function(delta, context)
-	for _, obj in pairs(lerps) do
-		if obj.enabled then
-			
-			-- Apply
-			obj.currPos = math.lerp(obj.prevTick, obj.currTick, delta)
-			
+	if not client:isPaused() then
+		for _, obj in pairs(lerps) do
+			if obj.enabled then
+				
+				-- Apply
+				obj.currPos = math.lerp(obj.prevTick, obj.currTick, delta)
+				
+			end
 		end
 	end
 end, "lerpRender")
