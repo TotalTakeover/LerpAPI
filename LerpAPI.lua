@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.6
+-- Version: 1.2.7
 
 -- Create API
 local lerpAPI = {}
@@ -25,6 +25,11 @@ local lerpMeta = {
 	__type = "LerpObject"
 }
 
+-- Mass checker that errors if mass is 0
+local function massCheck(val)
+	return val == 0 and error("\n\n§6Mass cannot be 0.\n§c", 3) or val
+end
+
 -- Create a lerp object
 function lerpAPI.new(pos, stiff, damp, mass)
 	
@@ -39,14 +44,11 @@ function lerpAPI.new(pos, stiff, damp, mass)
 			vel      = type(pos) ~= "number" and pos:reset() or 0,
 			stiff    = stiff or 0.2,
 			damp     = damp or 1,
-			mass     = mass or 1,
+			mass     = massCheck(mass) or 1,
 			enabled  = true
 		},
 		lerpMeta
 	)
-	
-	-- Checks if mass is set to 0
-	if mass == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
 	
 	-- Add object to list
 	lerps[obj] = obj
@@ -174,8 +176,7 @@ function lerpInternal:setMass(val)
 		Cannot have a mass of 0, otherwise divide by 0 errors will occur
 		You can *still* do 0 by changing it in field, but ur asking for issues at that point
 	--]] 
-	if val == 0 then error("\n\n§6Mass cannot be 0.\n§c", 2) end
-	self.mass = val
+	self.mass = massCheck(val)
 	
 	-- Return object
 	return self
