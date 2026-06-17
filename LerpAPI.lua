@@ -8,7 +8,7 @@
 --         \ \__\ \ \_______\   \ \__\ \ \__\ \__\ \_______\
 --          \|__|  \|_______|    \|__|  \|__|\|__|\|_______|
 --
--- Version: 1.2.7
+-- Version: 1.2.8
 
 -- Create API
 local lerpAPI = {}
@@ -41,7 +41,7 @@ function lerpAPI.new(pos, stiff, damp, mass)
 			currTick = pos,
 			target   = pos,
 			currPos  = pos,
-			vel      = type(pos) ~= "number" and pos:reset() or 0,
+			vel      = type(pos) ~= "number" and pos:copy():reset() or 0,
 			stiff    = stiff or 0.2,
 			damp     = damp or 1,
 			mass     = massCheck(mass) or 1,
